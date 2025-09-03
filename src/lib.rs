@@ -6,6 +6,7 @@ mod tests;
 use frame::prelude::*;
 use frame::traits::fungible::Inspect;
 use frame::traits::fungible::Mutate;
+
 pub use pallet::*;
 
 
@@ -71,6 +72,8 @@ pub mod pallet {
 		CannotTransferToSelf,
 		KittyNotExist,
 		NotKittyOwner,
+		NotForSale,
+		MaxPriceTooLow,
 	}
 
 /// The Extrinsics
