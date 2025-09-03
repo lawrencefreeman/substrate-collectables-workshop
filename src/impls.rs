@@ -62,7 +62,13 @@ impl<T: Config> Pallet<T> {
 	}
 
 	pub fn do_set_price(caller: T::AccountId, kitty_id: [u8; 32], new_price: Option<BalanceOf<T>>) -> DispatchResult {
-		
+		// ensure that the caller has the right to (owns) sell and set the price of the kitty
+		let mut kitty = Kitties::<T>::get(kitty_id).ok_or(Error::<T>::KittyNotExist)?;
+		ensure!(caller == kitty.owner, Error::<T>::NotKittyOwner);
+		// update the kitty price
+		kitty.price = new_price;
+		Kitties::<T>::insert(kitty_id, kitty);
+		// emit an event that the price has been set
 		Self::deposit_event(Event::<T>::PriceSet { owner: caller, kitty_id, new_price} );
 		Ok(())
 	}
