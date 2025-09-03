@@ -24,7 +24,7 @@ impl<T: Config> Pallet<T> {
 		}
 
 	pub fn mint(owner: T::AccountId, dna: [u8; 32]) -> DispatchResult {
-		let kitty: Kitty<T> = Kitty {dna, owner: owner.clone()};
+		let kitty: Kitty<T> = Kitty {dna, owner: owner.clone(), price: None};
 		//ensure the kittie does not already exist
 		ensure!(!Kitties::<T>::contains_key(dna), Error::<T>::DuplicateKitty);
 		let current_count: u32 = CountForKitties::<T>::get().unwrap_or(0);
@@ -56,7 +56,7 @@ impl<T: Config> Pallet<T> {
 			return Err(Error::<T>::NotKittyOwner.into());
 		}
 
-		Kitties::<T>::insert(kitty.dna, Kitty { dna: kitty_id, owner: to.clone() });
+		Kitties::<T>::insert(kitty_id, Kitty { dna: kitty_id, owner: to.clone(), price: None });
 		Self::deposit_event(Event::<T>::Transferred { from: from, to: to });
 		Ok(())
 	}
