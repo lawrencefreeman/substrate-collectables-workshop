@@ -60,6 +60,7 @@ pub mod pallet {
 	pub enum Event<T: Config> {
 		Created { owner: T::AccountId },
 		Transferred { from: T::AccountId, to: T::AccountId },
+		PriceSet { owner: T::AccountId, kitty_id: [u8; 32], new_price: Option<BalanceOf<T>> },
 	}
 
 	#[pallet::error]
@@ -84,6 +85,13 @@ pub mod pallet {
 		pub fn transfer(origin: OriginFor<T>, to: T::AccountId, kitty_id: [u8; 32]) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			Self::do_transfer(who, to, kitty_id)?;
+			Ok(())
+		}
+
+		pub fn set_price(origin: OriginFor<T>, kitty_id: [u8; 32], new_price: Option<BalanceOf<T>>) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			
+			Self::do_set_price(who, kitty_id, new_price);
 			Ok(())
 		}
 	}
