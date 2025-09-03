@@ -4,6 +4,7 @@ use frame::primitives::BlakeTwo256;
 use frame::primitives::Hash;
 
 
+/// Internal functions
 impl<T: Config> Pallet<T> {
 	pub fn gen_dna() -> [u8; 32] {
 			let parent_hash = frame_system::Pallet::<T>::parent_hash();
@@ -29,12 +30,18 @@ impl<T: Config> Pallet<T> {
 		let current_count: u32 = CountForKitties::<T>::get().unwrap_or(0);
 		let new_kittie_count = current_count.checked_add(1).ok_or(Error::<T>::TooManyKitties)?;
 		
-		/* 🚧 TODO 🚧: `append` the `dna` to the `KittiesOwned` storage for the `owner`. */
+		// must use try_append to avoid exceeding the max length of the bounded vec
 		KittiesOwned::<T>::try_append(&owner, dna).map_err(|_| Error::<T>::TooManyKitties)?;
 
 		Kitties::<T>::insert(dna, kitty);
 		CountForKitties::<T>::set(Some(new_kittie_count));
 		Self::deposit_event(Event::<T>::Created { owner });
+		Ok(())
+	}
+
+	pub fn do_transfer(from: T::AccountId, to: T::AccountId, _kitty: [u8; 32]) -> DispatchResult {
+		Self::deposit_event(Event::<T>::Transferred { from: from, to: to });
+		// TODO: remove the kitty from the owner
 		Ok(())
 	}
 }

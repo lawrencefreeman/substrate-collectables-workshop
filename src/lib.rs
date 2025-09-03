@@ -6,9 +6,11 @@ mod tests;
 use frame::prelude::*;
 pub use pallet::*;
 
+
 #[frame::pallet(dev_mode)]
 pub mod pallet {
 	use super::*;
+
 
 	#[pallet::pallet]
 	pub struct Pallet<T>(core::marker::PhantomData<T>);
@@ -16,7 +18,7 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-		/// Max number of kitties a single account can own
+		/// Max number of kitties a single account can own = 100
 		#[pallet::constant]
 		type MaxKittyOwned: Get<u32>;
 	}
@@ -42,10 +44,12 @@ pub mod pallet {
 		QueryKind = ValueQuery
 	>;
 
+/// The Events
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		Created { owner: T::AccountId },
+		Transferred { from: T::AccountId, to: T::AccountId },
 	}
 
 	#[pallet::error]
@@ -54,6 +58,7 @@ pub mod pallet {
 		DuplicateKitty,
 	}
 
+/// The Extrinsics
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		pub fn create_kitty(origin: OriginFor<T>) -> DispatchResult {
@@ -61,8 +66,12 @@ pub mod pallet {
 			let dna = [0u8; 32];
 			Self::mint(who, dna)?;
 			Ok(())
-		}
+		}	
 
-		
+		pub fn transfer(origin: OriginFor<T>, to: T::AccountId, kitty_id: [u8; 32]) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			Self::do_transfer(who, to, kitty_id)?;
+			Ok(())
+		}
 	}
 }
