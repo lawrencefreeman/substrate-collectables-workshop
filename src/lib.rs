@@ -58,6 +58,7 @@ pub mod pallet {
 		DuplicateKitty,
 		CannotTransferToSelf,
 		KittyNotExist,
+		NotKittyOwner,
 	}
 
 /// The Extrinsics
