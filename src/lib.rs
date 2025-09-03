@@ -4,6 +4,8 @@ mod impls;
 mod tests;
 
 use frame::prelude::*;
+use frame::traits::fungible::Inspect;
+use frame::traits::fungible::Mutate;
 pub use pallet::*;
 
 
@@ -16,10 +18,12 @@ pub mod pallet {
 	pub struct Pallet<T>(core::marker::PhantomData<T>);
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config { // this tightly couples our Kitties pallet to the frame_system pallet (we can + others too)
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-		/// Max number of kitties a single account can own = 100
+		type NativeBalance: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
+
 		#[pallet::constant]
+		// TODO: Max number of kitties a single account can own = 100
 		type MaxKittyOwned: Get<u32>;
 	}
 

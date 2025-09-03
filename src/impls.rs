@@ -58,7 +58,6 @@ impl<T: Config> Pallet<T> {
 
 		Kitties::<T>::insert(kitty.dna, Kitty { dna: kitty_id, owner: to.clone() });
 		Self::deposit_event(Event::<T>::Transferred { from: from, to: to });
-		// TODO: remove the kitty from the owner
 		Ok(())
 	}
 }
