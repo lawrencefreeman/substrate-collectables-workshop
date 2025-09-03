@@ -16,6 +16,9 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+		/// Max number of kitties a single account can own
+		#[pallet::constant]
+		type MaxKittyOwned: Get<u32>;
 	}
 
 	#[derive(Encode, Decode, TypeInfo, MaxEncodedLen)]
@@ -29,7 +32,15 @@ pub mod pallet {
 	pub(super) type CountForKitties<T: Config> = StorageValue<Value = u32>;
 
 	#[pallet::storage]
-	pub(super) type Kitties<T: Config> = StorageMap<Key = [u8; 32], Value = ()>;
+	pub(super) type Kitties<T: Config> = StorageMap<Key = [u8; 32], Value = Kitty<T>>;
+
+	/// Track the kitties owned by each account in an optimal way
+	#[pallet::storage]
+	pub(super) type KittiesOwned<T: Config> = StorageMap<
+		Key = T::AccountId,
+		Value = BoundedVec<[u8; 32], T::MaxKittyOwned>, 
+		QueryKind = ValueQuery
+	>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
