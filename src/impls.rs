@@ -39,7 +39,9 @@ impl<T: Config> Pallet<T> {
 		Ok(())
 	}
 
-	pub fn do_transfer(from: T::AccountId, to: T::AccountId, _kitty: [u8; 32]) -> DispatchResult {
+	pub fn do_transfer(from: T::AccountId, to: T::AccountId, kitty: [u8; 32]) -> DispatchResult {
+		ensure!(from != to, Error::<T>::CannotTransferToSelf);
+		let _kitty = Kitties::<T>::get(kitty).ok_or(Error::<T>::KittyNotExist)?;
 		Self::deposit_event(Event::<T>::Transferred { from: from, to: to });
 		// TODO: remove the kitty from the owner
 		Ok(())

@@ -56,6 +56,8 @@ pub mod pallet {
 	pub enum Error<T> {
 		TooManyKitties,
 		DuplicateKitty,
+		CannotTransferToSelf,
+		KittyNotExist,
 	}
 
 /// The Extrinsics
